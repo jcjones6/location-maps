@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ASU Libraries Catalog</title>
+<link rel="stylesheet" type="text/css" href="/scripts/ProStyles.css">
+<link rel="stylesheet" type="text/css" href="/screens/styles.css">
+<script type="text/javascript" src="/screens/qrcode.js"></script> <!-- http://jeromeetienne.github.io/jquery-qrcode/ -->
+<link rel="shortcut icon" type="ximage/icon" href="/screens/favicon.ico" />
+<meta name="viewport" content="width=device-width">
+
+<script type="text/javascript">
+function getUrlParameters(parameter, staticURL, decode){
+   /*
+    Function: getUrlParameters
+    Description: Get the value of URL parameters either from 
+                 current URL or static URL
+    Author: Tirumal
+    URL: www.code-tricks.com
+   */
+   var currLocation = (staticURL.length)? staticURL : window.location.search,
+       parArr = currLocation.split("?")[1].split("&"),
+       returnBool = true;
+   
+   for(var i = 0; i < parArr.length; i++){
+        parr = parArr[i].split("=");
+        if(parr[0] == parameter){
+            return (decode) ? decodeURIComponent(parr[1]) : parr[1];
+            returnBool = true;
+        }else{
+            returnBool = false;            
+        }
+   }
+   
+   if(!returnBool) return false;  
+}
+</script>
+</head>
+
+<body class="map">
+<script>
+
+// Get location code and call number from URL parameters
+var loc = getUrlParameters("loc", "", true);
+var callnum = getUrlParameters("callnum", "", true);
+var loc_end = loc.substr(2, loc.length - 1);
+error = false;
+
+// Check first two letters of location code to determine library branch.
+// Check remaining letters of location code to determine floor and map image.
+
+// Hayden Library
+if(loc.substr(0,2) == "hy") {
+	document.write("<h1>Hayden Library</h1>");
+	
+	// Stacks location
+	if(loc_end == "stk") {
+		if(callnum == "") {
+			document.write("<h2>Call number not found.</h2>");
+			error = true;
+		}
+		else {
+			// Parse call number. A-E799 = first floor, E800-L = second floor, N-Z = third floor
+			var letter = callnum.substr(0,1);
+			if(/[A-D]/.test(letter)) {
+				document.write("<h2>Level 1</h2><h2>Call #: " + callnum + "</h2><img src='/screens/hystk1.png'>");
+			}
+			else if(/[E]/.test(letter)) {
+				var period = callnum.indexOf(".");
+				e_test = callnum.substr(1, period);
+				var e_int = parseInt(e_test);
+				if(e_int < 800) {
+					document.write("<h2>Level 1</h2><h2>Call #: " + callnum + "</h2><img src='/screens/hystk1.png'>");
+				}
+				else {
+					document.write("<h2>Level 2</h2><h2>Call #: " + callnum + "</h2><img src='/screens/hystk2.png'>");	
+				}
+			}
+			else if(/[F-L]/.test(letter)) {
+				document.write("<h2>Level 2</h2><h2>Call #: " + callnum + "</h2><img src='/screens/hystk2.png'>");
+			}
+			else if(/[N-Z]/.test(letter)) {
+				document.write("<h2>Level 3</h2><h2>Call #: " + callnum + "</h2><img src='/screens/hystk3.png'>");
+			}
+			else {
+				document.write("<h2>Call number not found.</h2>");
+				error = true;
+			}
+		}
+	}
+	
+	// Luhrs Reading Room locations
+	else if(loc_end == "ahf" || loc_end == "ahr" || loc_end == "arv" || loc_end == "az" || loc_end == "azr" || loc_end == "cd" || loc_end == "cdr" || loc_end == "chi" || loc_end == "chr" || loc_end == "spc" || loc_end == "spr" || loc_end == "vl") {
+		document.write("<h2 style='margin-bottom: 0;'>Level 4 - Luhrs Reading Room</h2><p style='margin-top: 0;'>The Luhrs Reading Room is not always open when the library is open. See <a href='http://lib.asu.edu/hours'>Hours</a> for current schedule.</p>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hyspc.png'>");
+	}
+	
+	// AZ Docs and Gov Docs Reference locations
+	else if(loc_end == "azd" || loc_end == "gdr") {
+		document.write("<h2>Level 3</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hyazd.png'>");
+	}
+	
+	// Reserve locations
+	else if(loc_end == "crc" || loc_end == "crm" || loc_end == "r24" || loc_end == "r2n" || loc_end == "r2o" || loc_end == "r4n" || loc_end == "r4o" || loc_end == "r68" || loc_end == "r72" || loc_end == "rsv") {
+		document.write("<h2>Concourse Level - Information & Check Out Desk</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hycrc.png'>");
+	}
+	
+	// Curriculum locations
+	else if(loc_end == "cur" || loc_end == "cus") {
+		document.write("<h2>Level 2</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hycur.png'>");
+	}
+	
+	// Folio location
+	else if(loc_end == "fol") {
+		document.write("<h2>Lower Level</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hyfol.png'>");
+	}
+	
+	// Journal location
+	else if(loc_end == "jnl") {
+		document.write("<h2>Lower Level</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hyjnl.png'>");
+	}
+	
+	// Labriola Center location
+	else if(loc_end == "lbr") {
+		document.write("<h2 style='margin-bottom: 0;'>Level 2 - Labriola Center</h2><p style='margin-top: 0;'>The Labriola Center is not always open when the library is open. See <a href='http://lib.asu.edu/hours'>Hours</a> for current schedule.</p>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hylbr.png'>");
+	}
+	
+	// Microform locations
+	else if(loc_end == "mf" || loc_end == "mfr") {
+		document.write("<h2>Lower Level</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hymf.png'>");
+	}
+	
+	// Reference location
+	else if(loc_end == "ref") {
+		document.write("<h2>Concourse Level</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hyref.png'>");
+	}
+	
+	// East Asian and Southeast Asian locations
+	else if(loc_end == "eas" || loc_end == "sea") {
+		document.write("<h2>Lower Level</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hyeas.png'>");
+	}
+	
+	// UN Docs location
+	else if(loc_end == "und") {
+		document.write("<h2>Level 3</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hyund.png'>");
+	}
+	
+	// US Docs location
+	else if(loc_end == "usd") {
+		document.write("<h2>Level 3</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hyusd.png'>");
+	}
+	
+	// Video location
+	else if(loc_end == "vll") {
+		document.write("<h2>Lower Level</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/hyvll.png'>");
+	}
+	
+	// Default text if no match found
+	else {
+		document.write("<h2>Location not found. Check the <a href='https://lib.asu.edu/maps'>locations page</a> for floor plans of the libraries.</h2>");
+		error = true;
+	}
+}
+
+// West campus Library
+else if(loc.substr(0,2) == "ws") {
+	document.write("<h1>West campus (Fletcher) Library</h1>");
+	
+	// Stacks location
+	if(loc_end == "stk") {
+		if(callnum == "") {
+			document.write("<h2>Call number not found.</h2>");
+			error = true;
+		}
+		else {
+			// Parse call number. A-HB = Level 2 East, HC-NZ = Level 2 West, P-Z = Level 3 West
+			var letter = callnum.substr(0,1);
+			if(/[A-G]/.test(letter)) {
+				document.write("<h2>Level 2 East</h2><h2>Call #: " + callnum + "</h2><img src='/screens/wsstk2e.png'>");
+			}
+			else if(/H/.test(letter)) {
+				var h_test = callnum.substr(1,1);
+				if(/[0-9,AB]/.test(h_test)) {
+					document.write("<h2>Level 2 East</h2><h2>Call #: " + callnum + "</h2><img src='/screens/wsstk2e.png'>");				
+				}
+				else {
+					document.write("<h2>Level 2 West</h2><h2>Call #: " + callnum + "</h2><img src='/screens/wsstk2w.png'>");
+				}
+			}
+			else if(/[I-N]/.test(letter)) {
+				document.write("<h2>Level 2 West</h2><h2>Call #: " + callnum + "</h2><img src='/screens/wsstk2w.png'>");
+			}
+			else if(/T/.test(letter)) {
+				var t_test = callnum.substr(1,1);
+				if(/R/.test(t_test)) {
+					document.write("<h2>Level 2 East</h2><h2>Call #: " + callnum + "</h2><img src='/screens/wsstk2tr.png'>");				
+				}
+				else {
+					document.write("<h2>Level 3 West</h2><h2>Call #: " + callnum + "</h2><img src='/screens/wsstk3.png'>");
+				}
+			}
+			else if(/[P-Z]/.test(letter)) {
+				document.write("<h2>Level 3 West</h2><h2>Call #: " + callnum + "</h2><img src='/screens/wsstk3.png'>");
+			}
+			else {
+				document.write("<h2>Call number not found.</h2>");
+				error = true;
+			}
+		}
+	}
+	
+	// Reserve locations
+	else if(loc_end == "crc" || loc_end == "crm"|| loc_end == "r1d"|| loc_end == "r24"|| loc_end == "r2n"|| loc_end == "r2o"|| loc_end == "r3d"|| loc_end == "r3n"|| loc_end == "r3o"|| loc_end == "r4n"|| loc_end == "r68"|| loc_end == "r72"|| loc_end == "r7d"|| loc_end == "rsv") {
+		document.write("<h2>Level 1 East - Information & Check Out Desk</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/wscrc.png'>");		
+	}
+	
+	// Curriculum locations
+	else if(loc_end == "cur"|| loc_end == "lan") {
+		document.write("<h2>Level 2 West</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/wscur.png'>");		
+	}
+	
+	// Folio location
+	else if(loc_end == "fol") {
+		document.write("<h2>Level 2 East</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/wsfol.png'>");		
+	}
+	
+	// Journal location
+	else if(loc_end == "jnl") {
+		document.write("<h2>Level 1 West</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/wsjnl.png'>");		
+	}
+	
+	// Media location
+	else if(loc_end == "med" || loc_end == "mix") {
+		document.write("<h2>Level 1 West</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/wsmed.png'>");		
+	}
+	
+	// Reference locations
+	else if(loc_end == "ref" || loc_end == "rfa" || loc_end == "rfd" || loc_end == "rfi") {
+		document.write("<h2>Level 1 West</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/wsref.png'>");		
+	}
+	
+	// Default text if no match found
+	else {
+		document.write("<h2>Location not found. Check the <a href='https://lib.asu.edu/maps'>locations page</a> for floor plans of the libraries.</h2>");
+		error = true;
+	}
+}
+
+// Polytechnic campus Library
+else if(loc.substr(0,2) == "es") {
+	document.write("<h1>Polytechnic campus Library</h1>");
+	
+	// Reserve locations
+	if(loc_end == "crc" || loc_end == "crm" || loc_end == "r24" || loc_end == "r2n" || loc_end == "r2o" || loc_end == "r3d" || loc_end == "r4n" || loc_end == "r72" || loc_end == "r7d" || loc_end == "rsv") {
+		document.write("<h2>Information & Check Out Desk</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/escrc.png'>");		
+	}
+	
+	// Curriculum location
+	else if(loc_end == "cur") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/escur.png'>");		
+	}
+	
+	// Journal location
+	else if(loc_end == "jnl") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/esjnl.png'>");		
+	}
+	
+	// Media location
+	else if(loc_end == "med") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/esmed.png'>");		
+	}
+	
+	// Microform location
+	else if(loc_end == "mf") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/esmf.png'>");		
+	}
+	
+	// Stacks location
+	else if(loc_end == "stk") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/esstk.png'>");		
+	}
+	
+	// Default text if no match found
+	else {
+		document.write("<h2>Location not found. Check the <a href='https://lib.asu.edu/maps'>locations page</a> for floor plans of the libraries.</h2>");
+		error = true;
+	}
+}
+
+// Music Library
+else if(loc.substr(0,2) == "mu") {
+	document.write("<h1>Music Library</h1>");
+	
+	// Reserve locations
+	if(loc_end == "crc" || loc_end == "r24" || loc_end == "r2n" || loc_end == "r2o" || loc_end == "r3n" || loc_end == "r3o" || loc_end == "r4n"  || loc_end == "r4o"|| loc_end == "r68" || loc_end == "r72" || loc_end == "rsv") {
+		document.write("<h2>Information & Check Out Desk</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/mucrc.png'>");		
+	}
+	
+	// Folio location
+	else if(loc_end == "fol") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/mufol.png'>");		
+	}
+	
+	// Journal location
+	else if(loc_end == "jnl") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/mujnl.png'>");		
+	}
+	
+	// Microform location
+	else if(loc_end == "mf") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/mumf.png'>");		
+	}
+	
+	// Sound recording location
+	else if(loc_end == "rec") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/murec.png'>");		
+	}
+	
+	// Reference location
+	else if(loc_end == "ref") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/muref.png'>");		
+	}
+	
+	// Special collections location
+	else if(loc_end == "spc") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/muspc.png'>");		
+	}
+	
+	// Stacks location
+	else if(loc_end == "stk") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/mustk.png'>");		
+	}
+	
+	// Video location
+	else if(loc_end == "vid") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/muvid.png'>");		
+	}
+	
+	// Default text if no match found
+	else {
+		document.write("<h2>Location not found. Check the <a href='https://lib.asu.edu/maps'>locations page</a> for floor plans of the libraries.</h2>");
+		error = true;
+	}
+}
+
+// Downtown campus Library
+else if(loc.substr(0,2) == "pd") {
+	document.write("<h1>Downtown campus Library</h1>");
+	
+	// Reserve locations
+	if(loc_end == "crc" || loc_end == "r24" || loc_end == "r2n" || loc_end == "r2o" || loc_end == "r4n"  || loc_end == "r4o"|| loc_end == "r68" || loc_end == "r72" || loc_end == "rsv") {
+		document.write("<h2>Information & Check Out Desk</h2>");	
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/pdcrc.png'>");		
+	}
+	
+	// Journal location
+	else if(loc_end == "jnl") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/pdjnl.png'>");		
+	}
+	
+	// Reference location
+	else if(loc_end == "ref") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/pdref.png'>");		
+	}
+	
+	// Stacks location
+	else if(loc_end == "stk") {
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/pdstk.png'>");		
+	}
+	
+	// Default text if no match found
+	else {
+		document.write("<h2>Location not found. Check the <a href='https://lib.asu.edu/maps'>locations page</a> for floor plans of the libraries.</h2>");
+		error = true;
+	}
+}
+
+// Science library
+else if(loc.substr(0,2) == "sc") {
+	document.write("<h1>Science (Noble) Library</h1>");
+	
+	// Reserve locations
+	if(loc_end == "crc" || loc_end == "crm" || loc_end == "r24" || loc_end == "r2n" || loc_end == "r2o" || loc_end == "r4n"  || loc_end == "r4o"|| loc_end == "r68" || loc_end == "r72" || loc_end == "rsv") {
+		document.write("<h2>Level 1 - Information & Check Out Desk</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/sccrc.png'>");		
+	}
+	
+	// Folio location
+	else if(loc_end == "fol") {
+		document.write("<h2>Level 3</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/scfol.png'>");		
+	}
+	
+	// Journal location
+	else if(loc_end == "jnl") {
+		document.write("<h2>Level 2</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<h2>Call #: " + callnum + "</h2><img src='/screens/scjnl.png'>");		
+	}
+	
+	// Map locations
+	else if(loc_end == "map" || loc_end == "mpr") {
+		document.write("<h2 style='margin-bottom: 0;'>Level 3 - Map Collection</h2><p style='margin-top: 0;'>The Map Collection is not always open when the library is open. See <a href='http://lib.asu.edu/hours'>Hours</a> for current schedule.</p>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/scmap.png'>");		
+	}
+	
+	// Microform location
+	else if(loc_end == "mf") {
+		document.write("<h2>Level 1</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/scmf.png'>");		
+	}
+	
+	// Reference location
+	else if(loc_end == "ref") {
+		document.write("<h2>Level 1</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/scref.png'>");		
+	}
+	
+	// Stacks location
+	else if(loc_end == "stk") {
+		document.write("<h2>Level 3</h2>");
+		if(callnum != "") {
+			document.write("<h2>Call #: " + callnum + "</h2>");
+		}
+		document.write("<img src='/screens/scstk.png'>");		
+	}
+	
+	// Default text if no match found
+	else {
+		document.write("<h2>Location not found. Check the <a href='https://lib.asu.edu/maps'>locations page</a> for floor plans of the libraries.</h2>");
+		error = true;
+	}
+}
+
+// Default text if no match found for library
+else {
+	document.write("<h2>Location not found. Check the <a href='https://lib.asu.edu/maps'>locations page</a> for floor plans of the libraries.</h2>");
+	error = true;
+}
+</script>
+
+<script type="text/javascript">
+// Ouput QR code with the complete URL of the page
+if(!error) {
+	document.write('<div id="qrtext">Scan code to get this map on your mobile device</div><div id="qrcode"></div>');
+	new QRCode(document.getElementById("qrcode"), window.location.href);
+}
+</script>
+
+</body>
+</html>
